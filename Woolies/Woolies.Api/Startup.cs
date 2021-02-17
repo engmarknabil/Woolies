@@ -29,7 +29,7 @@ namespace Woolies.Api
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Woolies.Api", Version = "v1" });
             });
-
+            
             services.AddHttpClient<IResourceClient, ResourceClient>(client =>
                 client.BaseAddress = new Uri("http://dev-wooliesx-recruitment.azurewebsites.net/api/resource/"));
         }

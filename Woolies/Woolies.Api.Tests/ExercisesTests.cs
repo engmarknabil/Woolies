@@ -103,7 +103,7 @@ namespace Woolies.Api.Tests
         }
 
         [Theory, AutoData]
-        public async Task SortProducts_WhenSortOptionIsRcommended_ShouldSortProductsByHistoricalSalesInDescendingOrder(List<Product> products, List<ShopperHistory> shoppersHistory)
+        public async Task SortProducts_WhenSortOptionIsRecommended_ShouldSortProductsByHistoricalSalesInDescendingOrder(List<Product> products, List<ShopperHistory> shoppersHistory)
         {
             // Arrange
             var resourceClientMock = new Mock<IResourceClient>(MockBehavior.Strict);
