@@ -1,3 +1,5 @@
+using System;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -19,11 +21,17 @@ namespace Woolies.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers()
+                .AddJsonOptions(options =>
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Woolies.Api", Version = "v1" });
             });
+
+            services.AddHttpClient<IResourceClient, ResourceClient>(client =>
+                client.BaseAddress = new Uri("http://dev-wooliesx-recruitment.azurewebsites.net/api/resource/"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
