@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Woolies.Api.Models;
 
-namespace Woolies.Api
+namespace Woolies.Api.Business
 {
     public class ProductSorter
     {

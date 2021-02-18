@@ -1,5 +1,4 @@
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoFixture.Xunit2;
@@ -11,27 +10,10 @@ using Xunit;
 
 namespace Woolies.Api.Tests
 {
-    public class ExercisesTests
+    public class SortProductsTests
     {
-        [Fact]
-        public void GetUser_ShouldReturnCorrectUserResponse()
-        {
-            // Arrange
-            var controller = new ExercisesController(new Mock<IResourceClient>(MockBehavior.Strict).Object);
-
-            // Act
-            var userResponse = controller.GetUser();
-            
-            // Assert
-            userResponse.Should().BeEquivalentTo(new UserResponse
-            {
-                Name = "Mark Ibrahim",
-                Token = new Guid(Constants.Token)
-            });
-        }
-
         [Theory, AutoData]
-        public async Task SortProducts_WhenSortOptionIsLow_ShouldSortProductsByPriceInAscendingOrder(List<Product> products)
+        public async Task WhenSortOptionIsLow_ShouldSortProductsByPriceInAscendingOrder(List<Product> products)
         {
             // Arrange
             var resourceClientMock = new Mock<IResourceClient>(MockBehavior.Strict);
@@ -49,7 +31,7 @@ namespace Woolies.Api.Tests
         }
 
         [Theory, AutoData]
-        public async Task SortProducts_WhenSortOptionIsHigh_ShouldSortProductsByPriceInDescendingOrder(List<Product> products)
+        public async Task WhenSortOptionIsHigh_ShouldSortProductsByPriceInDescendingOrder(List<Product> products)
         {
             // Arrange
             var resourceClientMock = new Mock<IResourceClient>(MockBehavior.Strict);
@@ -67,7 +49,7 @@ namespace Woolies.Api.Tests
         }
 
         [Theory, AutoData]
-        public async Task SortProducts_WhenSortOptionIsAscending_ShouldSortProductsByNameInAscendingOrder(List<Product> products)
+        public async Task WhenSortOptionIsAscending_ShouldSortProductsByNameInAscendingOrder(List<Product> products)
         {
             // Arrange
             var resourceClientMock = new Mock<IResourceClient>(MockBehavior.Strict);
@@ -85,7 +67,7 @@ namespace Woolies.Api.Tests
         }
 
         [Theory, AutoData]
-        public async Task SortProducts_WhenSortOptionIsDescending_ShouldSortProductsByNameInDescendingOrder(List<Product> products)
+        public async Task WhenSortOptionIsDescending_ShouldSortProductsByNameInDescendingOrder(List<Product> products)
         {
             // Arrange
             var resourceClientMock = new Mock<IResourceClient>(MockBehavior.Strict);
@@ -103,7 +85,7 @@ namespace Woolies.Api.Tests
         }
 
         [Theory, AutoData]
-        public async Task SortProducts_WhenSortOptionIsRecommended_ShouldSortProductsByHistoricalSalesInDescendingOrder(List<Product> products, List<ShopperHistory> shoppersHistory)
+        public async Task WhenSortOptionIsRecommended_ShouldSortProductsByHistoricalSalesInDescendingOrder(List<Product> products, List<ShopperHistory> shoppersHistory)
         {
             // Arrange
             var resourceClientMock = new Mock<IResourceClient>(MockBehavior.Strict);

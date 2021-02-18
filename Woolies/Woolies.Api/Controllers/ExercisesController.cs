@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Woolies.Api.Business;
 using Woolies.Api.Models;
 
 namespace Woolies.Api.Controllers
@@ -33,6 +33,12 @@ namespace Woolies.Api.Controllers
         {
             var products = await _resourceClient.GetProducts();
             return await ProductSorter.Sort(sortOption, products, _resourceClient);
+        }
+
+        [HttpPost("trolleyTotal")]
+        public decimal GetTrolleyTotal(Trolley trolley)
+        {
+            return TrolleyCalculator.CalculateTrolleyTotal(trolley);
         }
     }
 }
