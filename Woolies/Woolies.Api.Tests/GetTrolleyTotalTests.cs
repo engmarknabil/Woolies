@@ -28,6 +28,79 @@ namespace Woolies.Api.Tests
         };
 
         [Fact]
+        public void WhenTrolleyIsAllEmpty_ShouldReturnZero()
+        {
+            // Arrange
+            var controller = new ExercisesController(new Mock<IResourceClient>(MockBehavior.Strict).Object);
+
+            // Act
+            var trolleyTotal = controller.GetTrolleyTotal(new Trolley());
+
+            // Assert
+            trolleyTotal.Should().Be(0);
+        }
+
+        [Fact]
+        public void WhenNoQuantitiesInTrolley_ShouldReturnZero()
+        {
+            // Arrange
+            var controller = new ExercisesController(new Mock<IResourceClient>(MockBehavior.Strict).Object);
+
+            // Act
+            var trolleyTotal = controller.GetTrolleyTotal(new Trolley
+            {
+                Products = Products,
+                Specials = new List<TrolleySpecial>
+                {
+                    new TrolleySpecial
+                    {
+                        Quantities = new List<TrolleyQuantity>
+                        {
+                            new TrolleyQuantity
+                            {
+                                Name = Product2,
+                                Quantity = 2
+                            }
+                        },
+                        Total = 5
+                    }
+                }
+            });
+
+            // Assert
+            trolleyTotal.Should().Be(0);
+        }
+
+        [Fact]
+        public void WhenNoSpecialsInTrolley_ShouldReturnFullPrice()
+        {
+            // Arrange
+            var controller = new ExercisesController(new Mock<IResourceClient>(MockBehavior.Strict).Object);
+
+            // Act
+            var trolleyTotal = controller.GetTrolleyTotal(new Trolley
+            {
+                Products = Products,
+                Quantities = new List<TrolleyQuantity>
+                {
+                    new TrolleyQuantity
+                    {
+                        Name = Product1,
+                        Quantity = 1
+                    },
+                    new TrolleyQuantity
+                    {
+                        Name = Product2,
+                        Quantity = 1
+                    }
+                }
+            });
+
+            // Assert
+            trolleyTotal.Should().Be(30);
+        }
+
+        [Fact]
         public void WhenAnyQuantityIsLessThanSpecial_ShouldNotApplySpecial()
         {
             // Arrange
