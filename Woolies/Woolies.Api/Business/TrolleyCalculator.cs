@@ -8,14 +8,9 @@ namespace Woolies.Api.Business
     {
         public static decimal CalculateTrolleyTotal(Trolley trolley)
         {
-            var special = GetBestSpecial(trolley);
-            if (special == null)
-            {
-                return CalculatePrice(trolley.Products, trolley.Quantities);
-            }
-
-            var fullPricedQuantities = GetFullPricedQuantities(trolley, special);
-            return CalculatePrice(trolley.Products, fullPricedQuantities) + special.Total;
+            var specialCombo = GetBestSpecialCombo(trolley);
+            var fullPricedQuantities = GetFullPricedQuantities(trolley, specialCombo);
+            return CalculatePrice(trolley.Products, fullPricedQuantities) + specialCombo.Total;
         }
 
         private static List<TrolleyQuantity> GetFullPricedQuantities(Trolley trolley, TrolleySpecial special)
@@ -34,31 +29,50 @@ namespace Woolies.Api.Business
                 ?.Quantity ?? 0;
         }
 
-        private static TrolleySpecial GetBestSpecial(Trolley trolley)
+        private static TrolleySpecial GetBestSpecialCombo(Trolley trolley)
         {
-            var eligibleSpecials = GetEligibleSpecials(trolley);
-            return eligibleSpecials.Any() ? GetBestSpecial(trolley.Products, eligibleSpecials) : null;
+            var bestCandidateSpecials = GetBestCandidateSpecialCombos(trolley);
+            return GetBestSpecialCombo(trolley.Products, bestCandidateSpecials);
         }
 
-        private static List<TrolleySpecial> GetEligibleSpecials(Trolley trolley)
+        private static List<TrolleySpecial> GetBestCandidateSpecialCombos(Trolley trolley)
         {
-            var eligibleSpecials = new List<TrolleySpecial>();
-            
-            var eligibleSingleSpecials = trolley.Specials.Where(special => IsEligible(trolley.Quantities, special)).ToList();
-            var newEligibleSpecials = new List<TrolleySpecial>(eligibleSingleSpecials);
-            while (newEligibleSpecials.Any())
+            var eligibleIndividualSpecials = trolley.Specials.Where(special => IsEligible(trolley.Quantities, special)).ToList();
+
+            var bestSpecialCombo = new TrolleySpecial();
+            return GetBestCandidateSpecialCombos(trolley.Quantities, bestSpecialCombo, eligibleIndividualSpecials);
+        }
+
+        /// <summary>
+        /// This method returns a list of only the best candidate special combos, by combining as many specials as possible.
+        /// For example, if a trolley is eligible for special1 and special2 combined, only that special combo is returned,
+        /// but special1 and special2 are not returned individually.
+        /// </summary>
+        private static List<TrolleySpecial> GetBestCandidateSpecialCombos(List<TrolleyQuantity> trolleyQuantities,
+            TrolleySpecial eligibleSpecialCombo, List<TrolleySpecial> otherEligibleSpecialsToCombineWith)
+        {
+            var bestCandidateSpecialCombos = new List<TrolleySpecial>();
+
+            for (int i = 0; i < otherEligibleSpecialsToCombineWith.Count; i++)
             {
-                eligibleSpecials.AddRange(newEligibleSpecials);
-                newEligibleSpecials = newEligibleSpecials
-                    .SelectMany(special => eligibleSingleSpecials, CombineSpecials)
-                    .Where(special => IsEligible(trolley.Quantities, special))
-                    .ToList();
+                var newSpecialCombo = CombineSpecials(eligibleSpecialCombo, otherEligibleSpecialsToCombineWith[i]);
+                if (IsEligible(trolleyQuantities, newSpecialCombo))
+                {
+                    bestCandidateSpecialCombos.AddRange(
+                        GetBestCandidateSpecialCombos(trolleyQuantities, newSpecialCombo,
+                            otherEligibleSpecialsToCombineWith.Skip(i).ToList()));
+                }
             }
 
-            return eligibleSpecials;
+            if (!bestCandidateSpecialCombos.Any())
+            {
+                bestCandidateSpecialCombos.Add(eligibleSpecialCombo);
+            }
+
+            return bestCandidateSpecialCombos;
         }
 
-        private static TrolleySpecial GetBestSpecial(List<TrolleyProduct> products, List<TrolleySpecial> eligibleSpecials)
+        private static TrolleySpecial GetBestSpecialCombo(List<TrolleyProduct> products, List<TrolleySpecial> eligibleSpecials)
         {
             return eligibleSpecials
                 .OrderByDescending(special => CalculateSavings(products, special))
@@ -96,8 +110,11 @@ namespace Woolies.Api.Business
 
         private static bool IsEligible(List<TrolleyQuantity> trolleyQuantities, TrolleySpecial special)
         {
-            return special.Quantities.All(specialQuantity => trolleyQuantities.Any(trolleyQuantity =>
-                trolleyQuantity.Name == specialQuantity.Name && trolleyQuantity.Quantity >= specialQuantity.Quantity));
+            return special.Quantities
+                .All(specialQuantity =>
+                    trolleyQuantities.Any(trolleyQuantity =>
+                        trolleyQuantity.Name == specialQuantity.Name
+                        && trolleyQuantity.Quantity >= specialQuantity.Quantity));
         }
     }
 }
