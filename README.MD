@@ -6,4 +6,6 @@ This is an ASP.NET core api that solves Woolies tech challange.
 1. Hit F5
 
 # Hosting
-The api is hosted on Azure at https://wooliesapi.azurewebsites.net/exercises
+The api website is hosted on Azure at https://wooliesapi.azurewebsites.net
+
+The base url for the 3 exercise api's is https://wooliesapi.azurewebsites.net/exercises
