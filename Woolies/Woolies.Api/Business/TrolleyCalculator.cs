@@ -85,7 +85,7 @@ namespace Woolies.Api.Business
             return fullPriceEquivalentOfSpecial - special.Total;
         }
 
-        private static decimal CalculatePrice(List<TrolleyProduct> products, List<TrolleyQuantity> quantities)
+        public static decimal CalculatePrice(List<TrolleyProduct> products, List<TrolleyQuantity> quantities)
         {
             return quantities
                 .Join(products, quantity => quantity.Name, product => product.Name,

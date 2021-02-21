@@ -72,6 +72,45 @@ namespace Woolies.Api.Tests
         }
 
         [Fact]
+        public void WhenQuantityIsZero_ShouldReturnZero()
+        {
+            // Arrange
+            var controller = new ExercisesController(new Mock<IResourceClient>(MockBehavior.Strict).Object);
+
+            // Act
+            var trolleyTotal = controller.GetTrolleyTotal(new Trolley
+            {
+                Products = Products,
+                Specials = new List<TrolleySpecial>
+                {
+                    new TrolleySpecial
+                    {
+                        Quantities = new List<TrolleyQuantity>
+                        {
+                            new TrolleyQuantity
+                            {
+                                Name = Product1,
+                                Quantity = 1
+                            }
+                        },
+                        Total = 5
+                    }
+                },
+                Quantities = new List<TrolleyQuantity>
+                {
+                    new TrolleyQuantity
+                    {
+                        Name = Product1,
+                        Quantity = 0
+                    }
+                }
+            });
+
+            // Assert
+            trolleyTotal.Should().Be(0);
+        }
+
+        [Fact]
         public void WhenNoSpecialsInTrolley_ShouldReturnFullPrice()
         {
             // Arrange
@@ -302,6 +341,11 @@ namespace Woolies.Api.Tests
                     {
                         Name = Product1,
                         Quantity = 10
+                    },
+                    new TrolleyQuantity
+                    {
+                        Name = Product2,
+                        Quantity = 0
                     }
                 }
             });
